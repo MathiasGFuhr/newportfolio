@@ -1,0 +1,26 @@
+@import 'tailwindcss';
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Para navegadores que suportam scroll-padding */
+html {
+  scroll-padding-top: 80px; /* Altura do header */
+}
+
+/* Esconde a barra de rolagem no Chrome, Safari e Opera */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Esconde a barra de rolagem no IE, Edge e Firefox */
+html {
+  -ms-overflow-style: none;  /* IE e Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Animação suave para todos os elementos */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
