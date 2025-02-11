@@ -52,7 +52,7 @@ const Header = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            Seu Nome
+            Mathias Fuhr
           </motion.h1>
 
           {/* Desktop Navigation */}
