@@ -102,42 +102,38 @@ const Projects = () => {
                     alt={project.title}
                     className="w-full h-48 sm:h-56 object-cover transform group-hover:scale-105 transition-all duration-1000 ease-out"
                   />
-                  <div 
-                    className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 ease-in-out backdrop-blur-[2px]"
-                  />
                   
-                  <motion.div 
-                    className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-700"
-                  >
-                    <div className="flex gap-4 transform translate-y-8 group-hover:translate-y-0 transition-all duration-700 ease-out">
-                      {project.github && (
-                        <motion.a 
-                          href={project.github}
-                          className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-full hover:bg-orange-500 transition-all duration-500 hover:shadow-lg hover:shadow-orange-500/25"
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          transition={{ duration: 0.3, ease: "easeOut" }}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <FaGithub className="text-xl" />
-                        </motion.a>
-                      )}
-                      {project.demo && (
-                        <motion.a 
-                          href={project.demo}
-                          className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-full hover:bg-orange-500 transition-all duration-500 hover:shadow-lg hover:shadow-orange-500/25"
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          transition={{ duration: 0.3, ease: "easeOut" }}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <FaExternalLinkAlt className="text-xl" />
-                        </motion.a>
-                      )}
+                  {/* Overlay para desktop */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 ease-in-out backdrop-blur-[2px] hidden md:block">
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-700">
+                      <div className="flex gap-4 transform translate-y-8 group-hover:translate-y-0 transition-all duration-700 ease-out">
+                        {project.github && (
+                          <motion.a 
+                            href={project.github}
+                            className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-full hover:bg-orange-500 transition-all duration-500 hover:shadow-lg hover:shadow-orange-500/25"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <FaGithub className="text-xl" />
+                          </motion.a>
+                        )}
+                        {project.demo && (
+                          <motion.a 
+                            href={project.demo}
+                            className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-full hover:bg-orange-500 transition-all duration-500 hover:shadow-lg hover:shadow-orange-500/25"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <FaExternalLinkAlt className="text-xl" />
+                          </motion.a>
+                        )}
+                      </div>
                     </div>
-                  </motion.div>
+                  </div>
                 </div>
 
                 <div className="p-6">
@@ -147,6 +143,33 @@ const Projects = () => {
                   <p className="text-gray-400 text-sm leading-relaxed mb-4">
                     {project.description}
                   </p>
+                  
+                  {/* Botões para mobile */}
+                  <div className="flex gap-3 mb-4 md:hidden">
+                    {project.github && (
+                      <a 
+                        href={project.github}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-orange-500 transition-all duration-300"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <FaGithub className="text-lg" />
+                        <span>GitHub</span>
+                      </a>
+                    )}
+                    {project.demo && (
+                      <a 
+                        href={project.demo}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-orange-500 transition-all duration-300"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <FaExternalLinkAlt className="text-lg" />
+                        <span>Demo</span>
+                      </a>
+                    )}
+                  </div>
+
                   {project.technologies && (
                     <div className="flex flex-wrap gap-2">
                       {project.technologies.split(',').map((tech, index) => (
