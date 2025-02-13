@@ -11,6 +11,9 @@ import { useEffect } from 'react'
 import emailjs from '@emailjs/browser'
 import { emailjsConfig } from './config/emailjs'
 import Footer from './components/Footer'
+import CertificatesPage from './pages/CertificatesPage'
+import AdminProjects from './pages/AdminProjects'
+import AdminCertificates from './pages/AdminCertificates'
 
 function App() {
   useEffect(() => {
@@ -44,6 +47,7 @@ function App() {
         />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/certificados" element={<CertificatesPage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route 
             path="/admin" 
@@ -54,6 +58,8 @@ function App() {
             }
           >
             <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="projetos" element={<AdminProjects />} />
+            <Route path="certificados" element={<AdminCertificates />} />
           </Route>
         </Routes>
         {!window.location.pathname.includes('/admin') && (

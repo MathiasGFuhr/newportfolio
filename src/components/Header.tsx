@@ -17,7 +17,13 @@ const Header = () => {
     ['rgba(0, 0, 0, 0.5)', 'rgba(0, 0, 0, 0.95)']
   )
 
-  const navItems = ['home', 'sobre', 'projetos', 'contato']
+  const navItems = [
+    { href: '#home', label: 'home' },
+    { href: '#sobre', label: 'sobre' },
+    { href: '#projetos', label: 'projetos' },
+    { href: '/certificados', label: 'certificados' },
+    { href: '#contato', label: 'contato' }
+  ]
 
   // Fecha o menu quando a tela é redimensionada para desktop
   useEffect(() => {
@@ -58,8 +64,8 @@ const Header = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
-              <NavLink key={item} href={`#${item}`}>
-                {item}
+              <NavLink key={item.label} href={item.href}>
+                {item.label}
               </NavLink>
             ))}
             {isAuthenticated && (
@@ -124,7 +130,7 @@ const Header = () => {
               >
                 {navItems.map((item, index) => (
                   <motion.div
-                    key={item}
+                    key={item.label}
                     variants={{
                       closed: {
                         opacity: 0,
@@ -145,12 +151,12 @@ const Header = () => {
                     className="w-full"
                   >
                     <a
-                      href={`#${item}`}
+                      href={item.href}
                       className="text-black hover:text-black/70 transition-all text-2xl uppercase tracking-wider py-5 w-full flex justify-center items-center font-bold hover:scale-105 relative group"
                       onClick={() => setIsOpen(false)}
                     >
                       <span className="relative">
-                        {item}
+                        {item.label}
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
                       </span>
                     </a>

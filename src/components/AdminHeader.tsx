@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { motion } from 'framer-motion'
-import { FaHome, FaSignOutAlt } from 'react-icons/fa'
+import { FaHome, FaSignOutAlt, FaCode, FaCertificate } from 'react-icons/fa'
 
 const AdminHeader = () => {
   const { logout } = useAuth()
@@ -9,7 +9,8 @@ const AdminHeader = () => {
 
   const navItems = [
     { path: '/', label: 'Ver Site', icon: FaHome },
-    { path: '/admin/dashboard', label: 'Dashboard', icon: null }
+    { path: '/admin/projetos', label: 'Projetos', icon: FaCode },
+    { path: '/admin/certificados', label: 'Certificados', icon: FaCertificate }
   ]
 
   return (

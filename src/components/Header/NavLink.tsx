@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 interface NavLinkProps {
   href: string
@@ -35,15 +36,24 @@ export const NavLink = ({ href, children }: NavLinkProps) => {
 
   return (
     <motion.div className="relative">
-      <a 
-        href={href} 
-        onClick={scrollToSection}
-        className={`text-white hover:text-orange-500 transition-all hover:scale-110 uppercase text-sm tracking-wider ${
-          isActive ? 'text-orange-500' : ''
-        }`}
-      >
-        {children}
-      </a>
+      {href.startsWith('#') ? (
+        <a 
+          href={href} 
+          onClick={scrollToSection}
+          className={`text-white hover:text-orange-500 transition-all hover:scale-110 uppercase text-sm tracking-wider ${
+            isActive ? 'text-orange-500' : ''
+          }`}
+        >
+          {children}
+        </a>
+      ) : (
+        <Link 
+          to={href}
+          className="text-white hover:text-orange-500 transition-all hover:scale-110 uppercase text-sm tracking-wider"
+        >
+          {children}
+        </Link>
+      )}
       {isActive && (
         <motion.div
           layoutId="activeSection"

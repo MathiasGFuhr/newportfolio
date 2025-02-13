@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { projectService, Project } from '../services/projectService'
-import { FaSpinner, FaTimes } from 'react-icons/fa'
+import { FaSpinner, FaTimes, FaPlus } from 'react-icons/fa'
 import EditProjectModal from '../components/EditProjectModal'
 import toast from 'react-hot-toast'
+import { certificateService, Certificate } from '../services/certificateService'
+import EditCertificateModal from '../components/EditCertificateModal'
 
 const AdminDashboard = () => {
   const [projects, setProjects] = useState<Project[]>([])
@@ -21,6 +23,16 @@ const AdminDashboard = () => {
   })
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
+  const [certificates, setCertificates] = useState<Certificate[]>([])
+  const [editingCertificate, setEditingCertificate] = useState<Certificate | null>(null)
+  const [newCertificate, setNewCertificate] = useState({
+    title: '',
+    institution: '',
+    date: '',
+    description: '',
+    image: null as File | null,
+    link: ''
+  })
 
   const availableTechnologies = [
     'React', 'TypeScript', 'JavaScript', 'HTML', 'CSS', 'Tailwind',
@@ -32,8 +44,13 @@ const AdminDashboard = () => {
   const [selectedTechs, setSelectedTechs] = useState<string[]>([])
   const [techInput, setTechInput] = useState('')
 
+  // Estado para controlar os modais de criação
+  const [isAddingProject, setIsAddingProject] = useState(false)
+  const [isAddingCertificate, setIsAddingCertificate] = useState(false)
+
   useEffect(() => {
     loadProjects()
+    loadCertificates()
   }, [])
 
   const loadProjects = async () => {
@@ -45,6 +62,16 @@ const AdminDashboard = () => {
       console.error(err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const loadCertificates = async () => {
+    try {
+      const data = await certificateService.getCertificates()
+      setCertificates(data)
+    } catch (err) {
+      setError('Erro ao carregar certificados')
+      console.error(err)
     }
   }
 
@@ -177,6 +204,97 @@ const AdminDashboard = () => {
     !selectedTechs.includes(tech)
   )
 
+  const handleCreateCertificate = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!newCertificate.title.trim() || !newCertificate.description.trim()) {
+      toast.error('Título e descrição são obrigatórios')
+      return
+    }
+
+    const promise = (async () => {
+      setSubmitting(true)
+      try {
+        const formData = new FormData()
+        formData.append('title', newCertificate.title)
+        formData.append('institution', newCertificate.institution)
+        formData.append('date', newCertificate.date)
+        formData.append('description', newCertificate.description)
+        if (newCertificate.image) formData.append('image', newCertificate.image)
+        formData.append('link', newCertificate.link)
+
+        const certificate = await certificateService.createCertificate(formData)
+        setCertificates([certificate, ...certificates])
+        
+        setNewCertificate({
+          title: '',
+          institution: '',
+          date: '',
+          description: '',
+          image: null,
+          link: ''
+        })
+        return 'Certificado adicionado com sucesso!'
+      } catch (err) {
+        throw new Error('Erro ao criar certificado')
+      } finally {
+        setSubmitting(false)
+      }
+    })()
+
+    toast.promise(promise, {
+      loading: 'Salvando certificado...',
+      success: (message) => message,
+      error: (err) => err.message
+    })
+  }
+
+  const handleDeleteCertificate = async (id: number) => {
+    if (!window.confirm('Tem certeza que deseja excluir este certificado?')) return
+
+    const promise = (async () => {
+      try {
+        await certificateService.deleteCertificate(id)
+        setCertificates(certificates.filter(c => c.id !== id))
+        return 'Certificado excluído com sucesso!'
+      } catch (err) {
+        throw new Error('Erro ao excluir certificado')
+      }
+    })()
+
+    toast.promise(promise, {
+      loading: 'Excluindo certificado...',
+      success: (message) => message,
+      error: (err) => err.message
+    })
+  }
+
+  const handleUpdateCertificate = async (updatedData: Partial<Certificate>) => {
+    if (!editingCertificate) return
+
+    const promise = (async () => {
+      try {
+        const updatedCertificate = await certificateService.updateCertificate(
+          editingCertificate.id,
+          updatedData
+        )
+        setCertificates(certificates.map(c => 
+          c.id === updatedCertificate.id ? updatedCertificate : c
+        ))
+        setEditingCertificate(null)
+        return 'Certificado atualizado com sucesso!'
+      } catch (err) {
+        throw new Error('Erro ao atualizar certificado')
+      }
+    })()
+
+    toast.promise(promise, {
+      loading: 'Atualizando certificado...',
+      success: (message) => message,
+      error: (err) => err.message
+    })
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center items-center">
@@ -186,7 +304,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div>
+    <div className="space-y-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Gerenciar Projetos</h1>
         <p className="mt-1 text-sm text-gray-500">
@@ -355,8 +473,15 @@ const AdminDashboard = () => {
             </div>
 
             <div className="bg-white shadow rounded-lg overflow-hidden">
-              <div className="px-4 py-5 sm:px-6">
+              <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
                 <h3 className="text-lg font-medium text-gray-900">Projetos</h3>
+                <button
+                  onClick={() => setIsAddingProject(true)}
+                  className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                >
+                  <FaPlus className="mr-2" />
+                  Novo Projeto
+                </button>
               </div>
               <ul className="divide-y divide-gray-200">
                 {projects.map((project) => (
@@ -394,15 +519,335 @@ const AdminDashboard = () => {
                 ))}
               </ul>
             </div>
+
+            <div className="bg-white shadow rounded-lg overflow-hidden mt-8">
+              <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
+                <h3 className="text-lg font-medium text-gray-900">Certificados</h3>
+                <button
+                  onClick={() => setIsAddingCertificate(true)}
+                  className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                >
+                  <FaPlus className="mr-2" />
+                  Novo Certificado
+                </button>
+              </div>
+              <ul className="divide-y divide-gray-200">
+                {certificates.map((certificate) => (
+                  <li key={certificate.id} className="px-4 py-4 sm:px-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        {certificate.image && (
+                          <img 
+                            src={certificate.image} 
+                            alt={certificate.title} 
+                            className="h-16 w-16 object-cover rounded"
+                          />
+                        )}
+                        <div>
+                          <h4 className="font-medium text-gray-900">{certificate.title}</h4>
+                          <p className="text-sm text-gray-500">{certificate.institution}</p>
+                        </div>
+                      </div>
+                      <div className="flex space-x-3">
+                        <button
+                          onClick={() => setEditingCertificate(certificate)}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          Editar
+                        </button>
+                        <button
+                          onClick={() => handleDeleteCertificate(certificate.id)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          Excluir
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Modal para Adicionar Projeto */}
+      {isAddingProject && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <motion.div 
+            className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Novo Projeto</h2>
+              <button
+                onClick={() => setIsAddingProject(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <FaTimes />
+              </button>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Título
+                </label>
+                <input
+                  type="text"
+                  value={newProject.title}
+                  onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
+                  className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Descrição
+                </label>
+                <textarea
+                  value={newProject.description}
+                  onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                  className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
+                  rows={3}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Imagem
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      setNewProject({ ...newProject, image: file })
+                      const reader = new FileReader()
+                      reader.onloadend = () => {
+                        setImagePreview(reader.result as string)
+                      }
+                      reader.readAsDataURL(file)
+                    }
+                  }}
+                  className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
+                />
+                {imagePreview && (
+                  <img src={imagePreview} alt="Preview" className="mt-2 h-32 object-cover rounded" />
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Link do GitHub
+                </label>
+                <input
+                  type="url"
+                  value={newProject.github}
+                  onChange={(e) => setNewProject({ ...newProject, github: e.target.value })}
+                  className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Link do Deploy
+                </label>
+                <input
+                  type="url"
+                  value={newProject.demo}
+                  onChange={(e) => setNewProject({ ...newProject, demo: e.target.value })}
+                  className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tecnologias
+                </label>
+                <input
+                  type="text"
+                  value={newProject.technologies}
+                  onChange={(e) => setNewProject({ ...newProject, technologies: e.target.value })}
+                  className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
+                  placeholder="React, TypeScript, Tailwind..."
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setIsAddingProject(false)}
+                  className="px-4 py-2 text-gray-700 border rounded hover:bg-gray-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 disabled:opacity-50 flex items-center"
+                >
+                  {submitting ? (
+                    <>
+                      <FaSpinner className="animate-spin mr-2" />
+                      Salvando...
+                    </>
+                  ) : (
+                    'Salvar'
+                  )}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Modal para Adicionar Certificado */}
+      {isAddingCertificate && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <motion.div 
+            className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Novo Certificado</h2>
+              <button
+                onClick={() => setIsAddingCertificate(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <FaTimes />
+              </button>
+            </div>
+            
+            <form onSubmit={handleCreateCertificate} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Título
+                </label>
+                <input
+                  type="text"
+                  value={newCertificate.title}
+                  onChange={(e) => setNewCertificate({ ...newCertificate, title: e.target.value })}
+                  className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Instituição
+                </label>
+                <input
+                  type="text"
+                  value={newCertificate.institution}
+                  onChange={(e) => setNewCertificate({ ...newCertificate, institution: e.target.value })}
+                  className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Data
+                </label>
+                <input
+                  type="text"
+                  value={newCertificate.date}
+                  onChange={(e) => setNewCertificate({ ...newCertificate, date: e.target.value })}
+                  className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Descrição
+                </label>
+                <textarea
+                  value={newCertificate.description}
+                  onChange={(e) => setNewCertificate({ ...newCertificate, description: e.target.value })}
+                  className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
+                  rows={3}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Imagem
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      setNewCertificate({ ...newCertificate, image: file })
+                    }
+                  }}
+                  className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Link da Credencial
+                </label>
+                <input
+                  type="url"
+                  value={newCertificate.link}
+                  onChange={(e) => setNewCertificate({ ...newCertificate, link: e.target.value })}
+                  className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setIsAddingCertificate(false)}
+                  className="px-4 py-2 text-gray-700 border rounded hover:bg-gray-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 disabled:opacity-50 flex items-center"
+                >
+                  {submitting ? (
+                    <>
+                      <FaSpinner className="animate-spin mr-2" />
+                      Salvando...
+                    </>
+                  ) : (
+                    'Salvar'
+                  )}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Modais de Edição */}
       {editingProject && (
         <EditProjectModal
           project={editingProject}
           onClose={() => setEditingProject(null)}
           onSave={handleUpdateProject}
+        />
+      )}
+
+      {editingCertificate && (
+        <EditCertificateModal
+          certificate={editingCertificate}
+          onClose={() => setEditingCertificate(null)}
+          onSave={handleUpdateCertificate}
         />
       )}
     </div>
