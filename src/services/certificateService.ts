@@ -15,7 +15,7 @@ export const certificateService = {
     const { data, error } = await supabase
       .from('certificates')
       .select('*')
-      .order('created_at', { ascending: false })
+      .order('date', { ascending: false })
 
     if (error) throw error
     return data

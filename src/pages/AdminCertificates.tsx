@@ -6,6 +6,8 @@ import EditCertificateModal from '../components/EditCertificateModal'
 import toast from 'react-hot-toast'
 import { supabase } from '../lib/supabase'
 import DeleteConfirmationModal from '../components/DeleteConfirmationModal'
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 
 const AdminCertificates = () => {
   const [certificates, setCertificates] = useState<Certificate[]>([])
@@ -134,6 +136,14 @@ const AdminCertificates = () => {
     })
   }
 
+  const formatDate = (date: string) => {
+    try {
+      return format(new Date(date), "dd-MM-yyyy", { locale: ptBR })
+    } catch (error) {
+      return date
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center items-center p-8">
@@ -176,10 +186,10 @@ const AdminCertificates = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Data
+              Data de Conclusão
             </label>
             <input
-              type="text"
+              type="date"
               value={newCertificate.date}
               onChange={(e) => setNewCertificate({ ...newCertificate, date: e.target.value })}
               className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
@@ -265,7 +275,13 @@ const AdminCertificates = () => {
                   )}
                   <div>
                     <h4 className="font-medium text-gray-900">{certificate.title}</h4>
-                    <p className="text-sm text-gray-500">{certificate.institution}</p>
+                    <p className="text-sm text-gray-500 mb-2">{certificate.institution}</p>
+                    <p className="text-sm text-gray-500 flex items-center gap-1">
+                      <span className="text-orange-500 font-medium">
+                        Concluído em:
+                      </span>
+                      {formatDate(certificate.date)}
+                    </p>
                   </div>
                 </div>
                 <div className="flex space-x-3">

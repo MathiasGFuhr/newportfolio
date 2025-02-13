@@ -68,10 +68,10 @@ const EditCertificateModal = ({ certificate, onClose, onSave }: EditCertificateM
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Data
+              Data de Conclusão
             </label>
             <input
-              type="text"
+              type="date"
               value={formData.date}
               onChange={(e) => setFormData({ ...formData, date: e.target.value })}
               className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"

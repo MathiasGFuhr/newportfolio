@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react'
 import { FaExternalLinkAlt, FaArrowLeft } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { certificateService, Certificate } from '../services/certificateService'
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 
 const CertificatesPage = () => {
   const [certificates, setCertificates] = useState<Certificate[]>([])
@@ -21,6 +23,14 @@ const CertificatesPage = () => {
       console.error('Erro ao carregar certificados:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const formatDate = (date: string) => {
+    try {
+      return format(new Date(date), "dd-MM-yyyy", { locale: ptBR })
+    } catch (error) {
+      return date
     }
   }
 
@@ -60,7 +70,7 @@ const CertificatesPage = () => {
           {certificates.map((cert) => (
             <motion.div
               key={cert.id}
-              className="bg-white/5 backdrop-blur-sm rounded-xl overflow-hidden border border-white/10 hover:border-orange-500/50 transition-all duration-300"
+              className="bg-white/5 backdrop-blur-sm rounded-xl overflow-hidden border border-white/10 hover:border-orange-500/50 transition-all duration-300 flex flex-col h-full"
               whileHover={{ y: -5 }}
             >
               <div 
@@ -77,34 +87,35 @@ const CertificatesPage = () => {
                 </div>
               </div>
 
-              <div className="p-6">
-                <h3 className="text-lg font-semibold text-white mb-2">
-                  {cert.title}
-                </h3>
-                <p className="text-orange-500 text-sm mb-2">
-                  {cert.institution}
-                </p>
-                <p className="text-gray-400 text-sm mb-4">
-                  {cert.description}
-                </p>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-500 text-sm">
-                    {cert.date}
-                  </span>
-                  {cert.link && (
-                    <motion.a
-                      href={cert.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-orange-500 hover:text-orange-400 flex items-center gap-2"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <span className="text-sm">Ver credencial</span>
-                      <FaExternalLinkAlt className="text-xs" />
-                    </motion.a>
-                  )}
+              <div className="p-6 flex flex-col flex-1">
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-white">
+                    {cert.title}
+                  </h3>
+                  <p className="text-orange-500 text-sm mt-1 mb-2">
+                    {cert.institution}
+                  </p>
+                  <p className="text-sm text-gray-400 flex items-center gap-1">
+                    <span className="text-orange-500 font-medium">
+                      Concluído em:
+                    </span>
+                    {formatDate(cert.date)}
+                  </p>
                 </div>
+
+                {cert.link && (
+                  <motion.a
+                    href={cert.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-orange-500 hover:text-orange-400 mt-4"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span className="text-sm">Ver credencial</span>
+                    <FaExternalLinkAlt className="text-xs ml-2" />
+                  </motion.a>
+                )}
               </div>
             </motion.div>
           ))}
