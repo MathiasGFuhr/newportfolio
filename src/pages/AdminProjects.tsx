@@ -42,8 +42,8 @@ const AdminProjects = () => {
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!newProject.title.trim() || !newProject.description.trim()) {
-      toast.error('Título e descrição são obrigatórios')
+    if (!newProject.title.trim()) {
+      toast.error('Título é obrigatório')
       return
     }
 
@@ -52,7 +52,7 @@ const AdminProjects = () => {
       try {
         const formData = new FormData()
         formData.append('title', newProject.title)
-        formData.append('description', newProject.description)
+        formData.append('description', newProject.description || '')
         if (newProject.image) formData.append('image', newProject.image)
         formData.append('github', newProject.github)
         formData.append('demo', newProject.demo)
@@ -165,14 +165,14 @@ const AdminProjects = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Descrição
+              Descrição (opcional)
             </label>
             <textarea
               value={newProject.description}
               onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
               className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
               rows={3}
-              required
+              placeholder="Descrição do projeto (opcional)"
             />
           </div>
 

@@ -7,7 +7,6 @@ export interface Certificate {
   date: string
   image: string
   link?: string
-  description: string
   created_at?: string
 }
 
@@ -49,7 +48,6 @@ export const certificateService = {
         title: formData.get('title') as string,
         institution: formData.get('institution') as string,
         date: formData.get('date') as string,
-        description: formData.get('description') as string,
         image: imageUrl,
         link: formData.get('link') as string || ''
       }

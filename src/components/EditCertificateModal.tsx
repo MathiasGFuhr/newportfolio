@@ -14,7 +14,6 @@ const EditCertificateModal = ({ certificate, onClose, onSave }: EditCertificateM
     title: certificate.title,
     institution: certificate.institution,
     date: certificate.date,
-    description: certificate.description,
     link: certificate.link || ''
   })
   const [submitting, setSubmitting] = useState(false)
@@ -76,19 +75,6 @@ const EditCertificateModal = ({ certificate, onClose, onSave }: EditCertificateM
               value={formData.date}
               onChange={(e) => setFormData({ ...formData, date: e.target.value })}
               className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Descrição
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
-              rows={3}
               required
             />
           </div>

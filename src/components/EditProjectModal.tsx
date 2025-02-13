@@ -56,14 +56,14 @@ const EditProjectModal = ({ project, onClose, onSave }: EditProjectModalProps) =
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Descrição
+              Descrição (opcional)
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
               rows={3}
-              required
+              placeholder="Descrição do projeto (opcional)"
             />
           </div>
 

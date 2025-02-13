@@ -17,7 +17,6 @@ const AdminCertificates = () => {
     title: '',
     institution: '',
     date: '',
-    description: '',
     image: null as File | null,
     link: ''
   })
@@ -43,16 +42,8 @@ const AdminCertificates = () => {
   const handleCreateCertificate = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Verificar autenticação
-    const { data: session } = await supabase.auth.getSession()
-    if (!session) {
-      toast.error('Usuário não está autenticado')
-      return
-    }
-    console.log('Sessão atual:', session) // Para debug
-
-    if (!newCertificate.title.trim() || !newCertificate.description.trim()) {
-      toast.error('Título e descrição são obrigatórios')
+    if (!newCertificate.title.trim()) {
+      toast.error('Título é obrigatório')
       return
     }
 
@@ -63,7 +54,6 @@ const AdminCertificates = () => {
         formData.append('title', newCertificate.title)
         formData.append('institution', newCertificate.institution)
         formData.append('date', newCertificate.date)
-        formData.append('description', newCertificate.description)
         if (newCertificate.image) formData.append('image', newCertificate.image)
         formData.append('link', newCertificate.link)
 
@@ -74,7 +64,6 @@ const AdminCertificates = () => {
           title: '',
           institution: '',
           date: '',
-          description: '',
           image: null,
           link: ''
         })
@@ -194,19 +183,6 @@ const AdminCertificates = () => {
               value={newCertificate.date}
               onChange={(e) => setNewCertificate({ ...newCertificate, date: e.target.value })}
               className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Descrição
-            </label>
-            <textarea
-              value={newCertificate.description}
-              onChange={(e) => setNewCertificate({ ...newCertificate, description: e.target.value })}
-              className="w-full p-2 border rounded focus:ring-orange-500 focus:border-orange-500"
-              rows={3}
               required
             />
           </div>

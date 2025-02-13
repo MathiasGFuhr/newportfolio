@@ -1,11 +1,13 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { motion } from 'framer-motion'
-import { FaHome, FaSignOutAlt, FaCode, FaCertificate } from 'react-icons/fa'
+import { FaHome, FaSignOutAlt, FaCode, FaCertificate, FaBars, FaTimes } from 'react-icons/fa'
+import { useState } from 'react'
 
 const AdminHeader = () => {
   const { logout } = useAuth()
   const location = useLocation()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const navItems = [
     { path: '/', label: 'Ver Site', icon: FaHome },
@@ -25,7 +27,8 @@ const AdminHeader = () => {
               Admin
             </Link>
 
-            <nav className="ml-8">
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex ml-8">
               <ul className="flex space-x-4">
                 {navItems.map((item) => {
                   const isActive = location.pathname === item.path
@@ -50,7 +53,8 @@ const AdminHeader = () => {
             </nav>
           </div>
 
-          <div className="flex items-center">
+          {/* Desktop Logout */}
+          <div className="hidden md:flex items-center">
             <motion.button
               onClick={logout}
               className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:text-orange-500 transition-colors"
@@ -61,8 +65,59 @@ const AdminHeader = () => {
               Sair
             </motion.button>
           </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-gray-700 hover:text-orange-500 transition-colors"
+            >
+              {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      <motion.div
+        className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'}`}
+        initial={false}
+        animate={isMenuOpen ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
+      >
+        <div className="px-2 pt-2 pb-3 space-y-1 bg-white shadow-lg">
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path
+            
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`block px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-colors
+                  ${isActive 
+                    ? 'bg-orange-500 text-white' 
+                    : 'text-gray-700 hover:bg-orange-50 hover:text-orange-500'
+                  }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {item.icon && <item.icon className="text-base" />}
+                {item.label}
+              </Link>
+            )
+          })}
+          
+          {/* Mobile Logout */}
+          <button
+            onClick={() => {
+              setIsMenuOpen(false)
+              logout()
+            }}
+            className="w-full px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 text-gray-700 hover:bg-orange-50 hover:text-orange-500 transition-colors"
+          >
+            <FaSignOutAlt />
+            Sair
+          </button>
+        </div>
+      </motion.div>
     </header>
   )
 }
