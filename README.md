@@ -1,50 +1,51 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# 🚀 Portfólio - Mathias Fuhr
 
-Currently, two official plugins are available:
+Este é o meu portfólio pessoal, desenvolvido para exibir meus projetos e certificações, com a capacidade de gerenciar tudo através de um painel admin seguro. O projeto foi construído utilizando as tecnologias mais modernas para oferecer uma experiência fluida e intuitiva.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 🚀 Acesse o portfólio:
+🔗 [Mathias Fuhr - Portfólio](https://newportfolio-dusky.vercel.app/)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### 🔧 Tecnologias Utilizadas
+- **Vite**: Ferramenta de build rápida para projetos em React.
+- **TypeScript**: Para garantir tipagem estática e maior segurança no código.
+- **TailwindCSS**: Framework de CSS para criar uma interface responsiva e customizável.
+- **Supabase**: Backend como serviço para gerenciamento de dados, autenticação e banco de dados.
+- **React**: Framework para construção da interface.
+- **Vercel**: Plataforma de hospedagem para o deploy.
 
-- Configure the top-level `parserOptions` property like this:
+---
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### ⚙️ Funcionalidades
+- **Painel Admin**: Um painel de administração privado onde você pode gerenciar seus projetos e certificados.
+- **Autenticação Segura**: Login e autenticação usando Supabase para garantir a privacidade e segurança do painel.
+- **Gerenciamento de Projetos**: Adicione, edite e remova projetos diretamente no painel.
+- **Gerenciamento de Certificados**: Organize e exiba seus certificados de forma simples.
+- **Rota Privada**: Apenas usuários autenticados têm acesso ao painel admin.
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+---
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+### 🖼 Screenshots
+#### Página Inicial
+![Portfolio](./src/assets/Screenshot_2.png)
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+#### Painel Admin
+![Painel Admin](./src/assets/Screenshot_1.png)
+
+#### Area restrita
+![ Area restrita](./src/assets/Screenshot_12.png)
+
+
+---
+
+### 📄 Licença
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+---
+
+### 👤 Autor
+**Mathias Fuhr**  
+- 🌐 [LinkedIn](https://www.linkedin.com/in/mathiasgilvanfuhr/)  
+- 📧 mathiasgfuhr@gmail.com
